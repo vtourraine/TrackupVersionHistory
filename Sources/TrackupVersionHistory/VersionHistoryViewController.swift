@@ -1,7 +1,7 @@
 import UIKit
 import TrackupCore
 
-public class ReleaseNotesViewController: UITableViewController {
+public class VersionHistoryViewController: UITableViewController {
     public var document: TrackupDocument?
     let dateFormatter = DateFormatter()
 
@@ -17,9 +17,10 @@ public class ReleaseNotesViewController: UITableViewController {
         super.viewDidLoad()
 
         title = NSLocalizedString("Version History", comment: "")
+
         tableView.register(VersionCell.self, forCellReuseIdentifier: K.cellIdentifier)
 
-        dateFormatter.dateStyle = .medium
+        dateFormatter.dateStyle = .long
         dateFormatter.doesRelativeDateFormatting = true
 
         if let path = Bundle.main.path(forResource: "releasenotes", ofType: "json") {
@@ -44,8 +45,11 @@ public class ReleaseNotesViewController: UITableViewController {
 
         let version = document.versions[indexPath.row]
         
+        let titleParagraphStyle = NSMutableParagraphStyle()
+        titleParagraphStyle.paragraphSpacing = 4
         let text = NSMutableAttributedString(string: version.title, attributes: [
-            .font: UIFont.preferredFont(forTextStyle: .headline)
+            .font: UIFont.preferredFont(forTextStyle: .headline),
+            .paragraphStyle: titleParagraphStyle
         ])
         
         if let dateComponents = version.createdDate,
@@ -56,13 +60,58 @@ public class ReleaseNotesViewController: UITableViewController {
                 .foregroundColor: UIColor.secondaryLabel
             ]))
         }
+        text.insert(NSAttributedString(string: " \n", attributes: [.font: UIFont.systemFont(ofSize: 10)]), at: 0)
+        text.append(NSAttributedString(string: "\n ", attributes: [.font: UIFont.systemFont(ofSize: 6)]))
         cell.textLabel?.attributedText = text
         cell.textLabel?.numberOfLines = 0
-        cell.detailTextLabel?.text = version.items.map{ "• " + $0.title }.joined(separator: "\n")
+
+        let attributedBody = version.items.map { item -> NSAttributedString in
+            let string = "• " + item.title
+            let font: UIFont
+            if item.status == .major {
+                font = .preferredFont(forTextStyle: .footnote, weight: .bold)
+            }
+            else {
+                font = .preferredFont(forTextStyle: .footnote)
+            }
+
+            return NSAttributedString(string: string, attributes: [.font: font])
+        }.joined(separator: "\n").mutableCopy() as! NSMutableAttributedString
+        attributedBody.append(NSAttributedString(string: "\n"))
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 6
+        attributedBody.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: attributedBody.length))
+        cell.detailTextLabel?.attributedText = attributedBody
         cell.detailTextLabel?.numberOfLines = 0
         cell.selectionStyle = .none
 
         return cell
+    }
+}
+
+extension Sequence where Iterator.Element == NSAttributedString {
+    func joined(separator: NSAttributedString) -> NSAttributedString {
+        return self.reduce(NSMutableAttributedString()) {
+            (r, e) in
+            if r.length > 0 {
+                r.append(separator)
+            }
+            r.append(e)
+            return r
+        }
+    }
+
+    func joined(separator: String = "") -> NSAttributedString {
+        return self.joined(separator: NSAttributedString(string: separator))
+    }
+}
+
+extension UIFont {
+    static func preferredFont(forTextStyle style: TextStyle, weight: Weight) -> UIFont {
+        let metrics = UIFontMetrics(forTextStyle: style)
+        let desc = UIFontDescriptor.preferredFontDescriptor(withTextStyle: style)
+        let font = UIFont.systemFont(ofSize: desc.pointSize, weight: weight)
+        return metrics.scaledFont(for: font)
     }
 }
 

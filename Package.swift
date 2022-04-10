@@ -3,20 +3,20 @@
 import PackageDescription
 
 let package = Package(
-    name: "TrackupReleaseNotes",
+    name: "TrackupVersionHistory",
     defaultLocalization: "en",
     platforms: [
         .iOS(.v13)
     ],
     products: [
-        .library(name: "TrackupReleaseNotes", targets: ["TrackupReleaseNotes"])
+        .library(name: "TrackupVersionHistory", targets: ["TrackupVersionHistory"])
     ],
     dependencies: [
         .package(path: "../Trackup-Project")
     ],
     targets: [
         .target(
-            name: "TrackupReleaseNotes",
+            name: "TrackupVersionHistory",
             dependencies: [
                 .product(name: "TrackupCore", package: "Trackup-Project")
             ]
