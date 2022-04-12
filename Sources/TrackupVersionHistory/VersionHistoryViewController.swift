@@ -37,7 +37,7 @@ public class VersionHistoryViewController: UITableViewController {
         super.viewWillAppear(animated)
     
         if (navigationController?.viewControllers.count == 1) {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissViewController(_:)))
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissViewController(_:)))
         }
     }
 
