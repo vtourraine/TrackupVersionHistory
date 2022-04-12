@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "TrackupCore",
+        "repositoryURL": "https://github.com/vtourraine/Trackup.git",
+        "state": {
+          "branch": null,
+          "revision": "513e0bf40b6d005354c844446e8e2334c450a863",
+          "version": "0.1.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
