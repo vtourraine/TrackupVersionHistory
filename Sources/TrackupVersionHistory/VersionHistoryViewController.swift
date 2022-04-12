@@ -12,6 +12,8 @@ public class VersionHistoryViewController: UITableViewController {
     struct K {
         static let cellIdentifier = "Cell"
     }
+    
+    // MARK: - View life cycle
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -30,8 +32,22 @@ public class VersionHistoryViewController: UITableViewController {
             }
         }
     }
+
+    override public func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     
-    // Table view
+        if (navigationController?.viewControllers.count == 1) {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissViewController(_:)))
+        }
+    }
+
+    // MARK: -
+
+    @IBAction open func dismissViewController(_ sender: AnyObject) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    // MARK: - Table view
     
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return document?.versions.count ?? 0
